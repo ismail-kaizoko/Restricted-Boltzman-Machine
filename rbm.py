@@ -1,17 +1,24 @@
 import numpy as np
 from typing import Tuple
 
-class RBMNetwork:
-    def __init__(self, X: np.ndarray, n_epochs: int, batch_size: int, lr: float):
+class RBMmodel:
+    def __init__(self, p, q, X: np.ndarray, n_epochs: int, batch_size: int, lr: float):
         """
         Initialize RBM Network
         
         Args:
+            a,b,W : learnable parameters of the model
             X: Input data matrix
             n_epochs: Number of training epochs
             batch_size: Size of mini-batches
             lr: Learning rate
         """
+        ## initialize the model parameters : 
+        self.a = np.zeros(p)
+        self.b = np.zeros(q)
+        self.w = np.random.normal(size = (p,q))
+
+
         self.X = X
         self.n_epochs = n_epochs
         self.batch_size = batch_size

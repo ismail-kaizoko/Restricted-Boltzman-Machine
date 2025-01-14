@@ -6,7 +6,7 @@ such models approxiamte the underlying distribution probability of a dataset.
 
 We use binary images here, but the work is applicable to RGB-values images as well :
 
-### Mathematica-Formulation
+### Mathematical-Formulation
 
 Let $V$ the random variable that underlies our data distribution that lives in the space $\set{0,1}^p$ \*we can see the image as a big vector where p = hxw$.
 such distribution is by nature much difficult, and leverage multimodality behaviours, supposing some hard constraint about the distribution (i.e being some gaussian) is in vain.
@@ -20,7 +20,7 @@ Once $V$ is found, we can easily substitue the $p_V$ distrbution by marginalizio
 
 The RBM formulation relies on the following model :
 
-$p*{\theta}(h|v) = e^{-E*\theta(v,h) / Z(\theta)}£ where £E\_\theta(v,h) = a^T v + b^T h v^T W h£. and £\theta = \set{a \in R^p, b \in R^q, W \in R^{pxq}} the set of parameters of the to find.
+$p{\theta}(h|v) = e^{-E*\theta(v,h) / Z(\theta)}$ where $E\_\theta(v,h) = a^T v + b^T h v^T W h$. and $\theta = \set{a \in R^p, b \in R^q, W \in R^{pxq}}$ the set of parameters of the to find.
 
 This formulation benefits from such mathematical properties, as $h$ being conditionly independent to $v$, the inverse is also true, whoch helps for sampling later.
 
