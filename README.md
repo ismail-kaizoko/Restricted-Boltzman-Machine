@@ -1,4 +1,4 @@
-## Restricted Boltzman Machine :
+# Restricted Boltzman Machine :
 
 This is a personal implementation of a RBM-model, trained to do a generative-image task.
 
@@ -6,7 +6,7 @@ such models approxiamte the underlying distribution probability of a dataset.
 
 We use binary images here, but the work is applicable to RGB-values images as well :
 
-##### Mathematica-Formulation
+### Mathematica-Formulation
 
 Let $V$ the random variable that underlies our data distribution that lives in the space ${0,1}^p$ \*we can see the image as a big vector where p = hxw$.
 such distribution is by nature much difficult, and leverage multimodality behaviours, supposing some hard constraint about the distribution (i.e being some gaussian) is in vain.
@@ -14,7 +14,7 @@ In the generative AI formulations, authors propose to go through some intermedia
 
 For example : take the height distribution inside a population, the estimated distribution is a mono-modal Gaussian, which parameters aren't easy to estimate, but whith conditioning over the random variable $X(\omega) = {male, female} $, the distribution becomes an easy Gaussian, we estimate the parameters of each gaussian seperatly.
 
-![Alt text](./imgs/rbm_states.png)
+![Alt text](./imgs/height_dist.png)
 
 Once $V$ is found, we can easily substitue the $p_V$ distrbution by marginaliziong over $p_H$. but such task isn't that easy for complexe phenomenon.
 
@@ -24,10 +24,10 @@ $p*{\theta}(h|v) = e^{-E*\theta(v,h) / Z(\theta)} where E\_\theta(v,h) = a^T v +
 
 This formulation benefits from such mathematical properties, as $h$ being conditionly independent to $v$, the inverse is also true, whoch helps for sampling later.
 
-![Alt text](./imgs/height_dist.png)
+![Alt text](./imgs/rbm_states.png)
 
 techniques such Gibbs-Sampling are used to sample from distribution to make it computationally feasible.
 
-#### Finale Note :
+### Finale Note :
 
 this relies purely on mathematicall results, and is implemented using only numpy package, isn't it interesting :D
