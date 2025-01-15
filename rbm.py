@@ -1,5 +1,4 @@
 import numpy as np
-from typing import Tuple
 
 class RBMmodel:
     def __init__(self, p, q, X: np.ndarray, n_epochs: int, batch_size: int, lr: float):
@@ -13,148 +12,117 @@ class RBMmodel:
             batch_size: Size of mini-batches
             lr: Learning rate
         """
-        ## initialize the model parameters : 
+        ## initialize the model learnable parameters : 
         self.a = np.zeros(p)
         self.b = np.zeros(q)
-        self.w = np.random.normal(size = (p,q))
+        self.w = np.random.rand(p,q)
 
-
+        #initialize model training parameters
         self.X = X
         self.n_epochs = n_epochs
         self.batch_size = batch_size
         self.lr = lr
-        
-    def initialize_centers(self, X: np.ndarray) -> np.ndarray:
-        """Initialize RBM centers using subset of training data"""
-        indices = np.random.permutation(X.shape[0])[:self.batch_size]
-        return X[indices]
+
     
-    def RBM_kernel(self, X: np.ndarray, centers: np.ndarray) -> np.ndarray:
+    def input_output(X_np):
         """
-        Compute RBM kernel between X and centers
-        
-        Args:
-            X: Input matrix of shape (n_samples, n_features)
-            centers: Centers matrix of shape (n_centers, n_features)
-            
-        Returns:
-            Kernel matrix of shape (n_samples, n_centers)
+        Does a forward pass from observed states x to the hidden state h
+        takes a mini-batch of size n of vectors x[p] and returns the result of vectors of h[q]
+        return : H_nq 
         """
-        n_samples = X.shape[0]
-        n_centers = centers.shape[0]
-        
-        # Compute pairwise squared Euclidean distances
-        X_squared = np.sum(X**2, axis=1).reshape(n_samples, 1)
-        centers_squared = np.sum(centers**2, axis=1).reshape(1, n_centers)
-        cross_term = np.dot(X, centers.T)
-        distances = X_squared + centers_squared - 2 * cross_term
-        
-        # Apply RBM kernel
-        gamma = 1.0 / X.shape[1]  # Default gamma value
-        return np.exp(-gamma * distances)
+        w = self.w
+        b = self.b
+
+        H_nq = 1/(1+np.exp(X_np @ w + b))
+        return H_nq
+
+
     
-    def forward(self, X: np.ndarray) -> Tuple[np.ndarray, dict]:
+    def output_input(H_nq):
         """
-        Forward pass through the network
-        
-        Args:
-            X: Input data matrix
-            
-        Returns:
-            output: Network output
-            cache: Cache of intermediate values for backward pass
+        Does a forward pass from hidden states h to the observed state x
+        takes a mini-batch of size n of vectors h[q] and returns the result of vectors of x[p]
+        return : H_nq 
         """
-        # X_batch computation
-        X_batch = X.copy()
+        w = self.w
+        a = self.a
+
+        X_np = 1/(1+np.exp(H_nq @ w.T + a))
+        return X_np
+
+
+    def suffle_dataset():
+        pass
+
+
+    def train():
+
+        loss = []
         
-        # Edge computation
-        edge = self.RBM_kernel(X_batch, self.centers)
-        
-        # Hidden layer computations
-        h_0 = edge
-        p_h_v_0 = self.entre_sortie(h_0)
-        v_1 = (np.random.rand(self.batch_size) < p_h_v_0).astype(float)
-        p_h_v_1 = self.sortie_entre(v_1)
-        
-        # Gradient computations
-        grad_a = np.sum(X_batch - v_1, axis=0, keepdims=True)
-        grad_b = np.sum(p_h_v_0 - p_h_v_1, axis=0, keepdims=True)
-        grad_w = np.dot(X_batch.T, p_h_v_0) - np.dot(v_1.T, p_h_v_1)
-        
-        cache = {
-            'X_batch': X_batch,
-            'edge': edge,
-            'h_0': h_0,
-            'p_h_v_0': p_h_v_0,
-            'v_1': v_1,
-            'p_h_v_1': p_h_v_1
-        }
-        
-        return grad_w, grad_a, grad_b, cache
-    
-    def backward(self, cache: dict) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-        """
-        Backward pass through the network
-        
-        Args:
-            cache: Cache of intermediate values from forward pass
-            
-        Returns:
-            Gradients for weights, a, and b parameters
-        """
-        X_batch = cache['X_batch']
-        p_h_v_0 = cache['p_h_v_0']
-        v_1 = cache['v_1']
-        p_h_v_1 = cache['p_h_v_1']
-        
-        # Compute gradients
-        d_log_po_daj = X_batch - v_1
-        d_log_po_dvi = p_h_v_0 - p_h_v_1
-        d_log_po_dbj = p_h_v_0 - v_1
-        
-        return d_log_po_daj, d_log_po_dvi, d_log_po_dbj
-    
-    def entre_sortie(self, h: np.ndarray) -> np.ndarray:
-        """Compute transition from hidden to visible layer"""
-        return 1 / (1 + np.exp(-h))
-    
-    def sortie_entre(self, v: np.ndarray) -> np.ndarray:
-        """Compute transition from visible to hidden layer"""
-        return 1 / (1 + np.exp(-v))
-    
-    def train(self) -> list:
-        """
-        Train the RBM network
-        
-        Returns:
-            List of errors during training
-        """
-        errors = []
-        self.centers = self.initialize_centers(self.X)
-        
-        for epoch in range(self.n_epochs):
-            # Mini-batch sampling
-            indices = np.random.permutation(self.X.shape[0])
-            
-            for i in range(0, self.X.shape[0], self.batch_size):
-                batch_indices = indices[i:i + self.batch_size]
-                X_batch = self.X[batch_indices]
+        for i in range(self.n_epochs):
+            X = self.shuffle(X)
+            n = len(X)
+            runs = n//self.batch_size +1
+
+            for j in range(runs):
+                X_batch = X[j:min(j+self.batch_size,n)]
+                t_b = len(X_batch)
+
+                v_0 = X_batch
                 
-                # Forward and backward passes
-                grad_w, grad_a, grad_b, cache = self.forward(X_batch)
-                d_log_po_daj, d_log_po_dvi, d_log_po_dbj = self.backward(cache)
-                
-                # Update parameters
-                self.centers -= self.lr * grad_w
-                
-                # Compute reconstruction error
-                X_rec = self.reconstruct(X_batch)
-                error = np.mean((X_batch - X_rec) ** 2)
-                errors.append(error)
-                
-        return errors
-    
-    def reconstruct(self, X: np.ndarray) -> np.ndarray:
-        """Reconstruct input data"""
-        h = self.RBM_kernel(X, self.centers)
-        return self.entre_sortie(h)
+                # here we do one step of Gibbs sampling to approxiamte an expectation term in the derivative d(log p_theta)/d w_ij:
+                 
+                # compute probability using sigmoid :
+                p_h_v_0 = self.input_output(X_batch)   # of size : [t_b, p]
+                #samlpe initial hidden vector h_0, supposing pixels iid and each follows bernouli of params p_h_v_0[idx]
+                h_0 = (np.random.rand(t_b, self.q) <  p_h_v_0)*1.
+
+                p_v_h_0 = self.output_input(h_0)
+                v_1 = (np.random.rand(t_b, self.p) < p_v_h_0)*1.
+
+                p_h_v_1 = self.input_output(v_1)
+
+
+                # compute gradients using close-form found analyitically : 
+
+                grad_a = np.sum(X_batch - v_1, axis=0)
+                grad_b = np.sum(p_h_v_0 - p_h_v_1, axis=0)   # intuitively, after convergence, the two probability will collapse and gradients will get smaller.
+                grad_w = X_batch.T*p_h_v_0 - v_1.T*p_h_v_1
+
+                #update model parameters : 
+                self.w += (self.lr/t_b)*grad_w
+                self.a += (self.lr/t_b)*grad_a
+                self.b += (self.lr/t_b)*grad_b
+            
+            epoch_error = self.reconstruction_loss(self.X)
+            loss.append( epoch_error)
+
+
+    def reconstruction_loss(x):
+        p_h_v = self.input_output(x)
+        h = (np.random.rand(self.q) <  p_h_v)*1.
+
+        p_v_h = self.output_input(h)
+        x_hat = (np.random.rand(self.p) < p_v_h)*1.
+
+        error = np.sum((x-x_hat)**2) / len(x)
+
+
+    def generate_image(L = 10):
+        """ 
+        function used to generate images after convergece:
+        this methode uses Gibbs-sampling algorithme to generate an image that matches the learnt distribution of the dataset statrting from a random_image.
+        see : https://en.wikipedia.org/wiki/Gibbs_sampling
+        """                 
+        # initial samlple supposed iid 
+        X = (np.random.rand(self.p) <  np.random.rand(self.p))*1.  # generate vector of dimension p where each pixel follows iid bernouli of random parameter 
+
+        for l in range(L):
+            p_h_v = self.input_output(X)   # of size : [t_b, p]
+            #samlpe initial hidden vector h_0, supposing pixels iid and each follows bernouli of params p_h_v_0[idx]
+            h = (np.random.rand(self.q) <  p_h_v)*1.
+
+            p_v_h = self.output_input(h)
+            X = (np.random.rand(self.p) < p_v_h)*1.
+
+        return X
