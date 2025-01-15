@@ -20,7 +20,7 @@ Once $V$ is found, we can easily substitue the $p_V$ distrbution by marginalizio
 
 The RBM formulation relies on the following energy-based model :
 
-$$p{\theta}(h|v) = e^{-E*\theta(v,h) / Z(\theta)}$$
+$$p_{\theta}(h|v) = e^{-E_{\theta} (v,h)} / Z(\theta)$$
 
 where $E\_\theta(v,h) = a^T v + b^T h +  v^T W h$ and $\theta = \set{a \in R^p, b \in R^q, W \in R^{p \times q}}$ the set of parameters to find.
 
