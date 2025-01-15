@@ -18,9 +18,11 @@ For example : take the height distribution inside a population, the estimated di
 
 Once $V$ is found, we can easily substitue the $p_V$ distrbution by marginaliziong over $p_H$. but such task isn't that easy for complexe phenomenon.
 
-The RBM formulation relies on the following model :
+The RBM formulation relies on the following energy-based model :
 
-$p{\theta}(h|v) = e^{-E*\theta(v,h) / Z(\theta)}$ where $E\_\theta(v,h) = a^T v + b^T h v^T W h$. and $\theta = \set{a \in R^p, b \in R^q, W \in R^{pxq}}$ the set of parameters of the to find.
+$$p{\theta}(h|v) = e^{-E*\theta(v,h) / Z(\theta)}$$
+
+where $E\_\theta(v,h) = a^T v + b^T h +  v^T W h$ and $\theta = \set{a \in R^p, b \in R^q, W \in R^{p \times q}}$ the set of parameters to find.
 
 This formulation benefits from such mathematical properties, as $h$ being conditionly independent to $v$, the inverse is also true, whoch helps for sampling later.
 

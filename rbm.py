@@ -108,7 +108,7 @@ class RBMmodel:
         error = np.sum((x-x_hat)**2) / len(x)
 
 
-    def generate_image(L = 10):
+    def generate_image_GibbsSampling(L = 10):
         """ 
         function used to generate images after convergece:
         this methode uses Gibbs-sampling algorithme to generate an image that matches the learnt distribution of the dataset statrting from a random_image.
