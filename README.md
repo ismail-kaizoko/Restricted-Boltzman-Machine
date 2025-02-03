@@ -113,6 +113,6 @@ Feel free to explore the code and experiment with different datasets or configur
 
 ---
 
-## License
+<!-- ## License
 
-This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for more details.
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for more details. -->
